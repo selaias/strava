@@ -7,20 +7,15 @@ Strava = {};
 OAuth.registerService('strava', 2, null, function(query, callback) {
 
   var accessToken= getTokenResponse(query)
-console.log(accessToken)
-  var userData = accessToken.athlete;//getUserData(accessToken.access_token)
-
-//   var profileData = getProfileData(accessToken)
+  
+  var userData = accessToken.athlete;
 
   var serviceData = {
     accessToken: accessToken.access_token,
-    refreshToken: accessToken.refresh_token,
-    expiresAt: accessToken.expires_in,
     id: userData.id
   };
-console.log(serviceData)
-  // include fields from underarmour
-  // https://developer.underarmour.com/io-docs
+  // include fields from strava
+  // http://strava.github.io/api/v3/athlete/
   var whitelisted = ['firstname', 'lastname', 'sex', 'profile_medium', 'email', 'country'];
 
   var fields = _.pick(userData, whitelisted);
@@ -61,87 +56,25 @@ var getTokenResponse = function (query) {
 
   var request_details = {
     method: "POST",
-    //headers: {'content-type' : 'application/x-www-form-urlencoded'},
     uri: 'https://www.strava.com/oauth/token',
     body: body_string
   };
 
-  var fut = new Future();
-  request(request_details, function(error, response, body) {
-     var responseContent;
-    try {
-      responseContent = JSON.parse(body);
-    } catch(e) {
-      error = new Meteor.Error(204, 'Response is not a valid JSON string.');
-      fut.throw(error);
-    } finally {
-      console.log(responseContent)
-      fut.return(responseContent);
-    }
-  });
-  var res = fut.wait();
-  return res;
+    var fut = new Future();
+    request(request_details, function(error, response, body) {
+       var responseContent;
+      try {
+        responseContent = JSON.parse(body);
+      } catch(e) {
+        error = new Meteor.Error(204, 'Response is not a valid JSON string.');
+        fut.throw(error);
+      } finally {
+        fut.return(responseContent);
+      }
+    });
+    var res = fut.wait();
+    return res;
 };
-
-//////////////////////////////////////////////// 
-// We need to first fetch the UserID
-////////////////////////////////////////////////
-var getUserData = function (accessToken) {
-  var config = ServiceConfiguration.configurations.findOne({service: 'strava'});
-  
-  if (!config)
-    throw new ServiceConfiguration.ConfigError();
-  
-  var fut = new Future();
-  var request_user = {
-    method: 'GET',
-    headers: {'Authorization' : 'Bearer ' + accessToken},
-    uri: "https://oauth2-api.mapmyapi.com/v7.0/user/self/"
-  };
-  request(request_user, function(error, response, body) {
-    var responseContent;
-    try {
-      responseContent = JSON.parse(body);
-    } catch(e) {
-      error = new Meteor.Error(204, 'Response is not a valid JSON string.');
-      fut.throw(error);
-    } finally {
-      console.log(responseContent)
-      fut.return(responseContent);
-    }
-  });
-  var userRes = fut.wait();
-  return userRes;
-};
-
-//////////////////////////////////////////////// 
-// fetch profile data
-////////////////////////////////////////////////
-
-// var getProfileData = function (accessToken) {
-//   var profileFut = new Future();
-
-//   var request_profile = {
-//     method: 'GET',
-//     headers: {'Accept': 'application/vnd.com.underarmour.Profile+json',
-//               'Authorization' : 'Bearer ' + accessToken}, 'Api-Key' : config.client_id,
-//     uri: "https://api.underarmour.com/profile"
-//   };
-  
-//   request(request_profile, function(error, response, body) {
-//     var responseContent;
-//     try {
-//       responseContent = JSON.parse(body);
-//     } catch(e) {
-//       error = new Meteor.Error(204, 'Response is not a valid JSON string.');
-//       profileFut.throw(error);
-//     } finally {
-//       profileFut.return(responseContent);
-//     }
-//   });
-//   var profileRes= profileFut.wait();
-//   return profileRes;
-// };
 
 Strava.retrieveCredential = function(credentialToken, credentialSecret) {
   return OAuth.retrieveCredential(credentialToken, credentialSecret);

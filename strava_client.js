@@ -27,7 +27,7 @@ Strava.requestCredential = function (options, credentialRequestCompleteCallback)
   var loginUrl =
       'https://www.strava.com/oauth/authorize?client_id=' + config.client_id +
       '&redirect_uri=' + OAuth._redirectUri('strava', config) +
-      '&approval_promp=force' + 
+      '&approval_prompt=force' + 
       '&response_type=code' +
       '&state=' + OAuth._stateParam(loginStyle, credentialToken);
   OAuth.launchLogin({
