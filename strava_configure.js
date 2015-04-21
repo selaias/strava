@@ -6,6 +6,6 @@ Template.configureLoginServiceDialogForStrava.helpers({
 Template.configureLoginServiceDialogForStrava.fields = function () {
   return [
     {property: 'client_id', label: 'Client ID'},
-    {property: 'client_secret', label: 'Client Secret'}
+    {property: 'secret', label: 'Client Secret'}
   ];
 };
