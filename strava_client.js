@@ -20,16 +20,17 @@ Strava.requestCredential = function (options, credentialRequestCompleteCallback)
   var credentialToken = Random.secret();
   var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
   var display = mobile ? 'touch' : 'popup';
-  var scope = "email";
-  if (options && options.requestPermissions)
+  var scope = '';
+  if (options && options.requestPermissions) {
     scope = options.requestPermissions.join(',');
+  }
   var loginStyle = OAuth._loginStyle('strava', config, options);
   var loginUrl =
       'https://www.strava.com/oauth/authorize?client_id=' + config.client_id +
       '&redirect_uri=' + OAuth._redirectUri('strava', config) +
-      '&approval_prompt=auto' + 
       '&response_type=code' +
-      '&state=' + OAuth._stateParam(loginStyle, credentialToken);
+      '&state=' + OAuth._stateParam(loginStyle, credentialToken) +
+      (!scope.trim() ? '' : '&scope=' + scope);
   OAuth.launchLogin({
     loginService: "strava",
     loginStyle: loginStyle,
