@@ -1,6 +1,6 @@
 Package.describe({
   name: 'selaias:strava',
-  version: '0.2.0',
+  version: '0.3.0',
   summary: 'An implementation of the Strava OAuth flow.',
   git: 'https://github.com/selaias/strava.git',
   documentation: 'README.md'
